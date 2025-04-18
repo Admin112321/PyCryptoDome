@@ -1,16 +1,13 @@
-name: Build PyCryptodome for iOS‑arm64
+name: Build PyCryptodome for iOS arm64
 
 on:
   workflow_dispatch:
 
 jobs:
   build-wheel:
-    # macOS runners have Xcode + arm64 toolchain
     runs-on: macos-latest
     env:
-      # only build for arm64 on macOS
       CIBW_ARCHS_MACOS: "arm64"
-      # Python version to match Pyto
       CIBW_BUILD: "cp310-*"
       CIBW_SKIP: "pp*"
       CIBW_COMPILER: "clang"
@@ -20,9 +17,7 @@ jobs:
 
       - name: Extract source tarball
         run: |
-          mkdir src
-          tar xzf pycryptodome-3.22.0.tar.gz -C src
-          mv src/pycryptodome-3.22.0 pycryptodome
+          tar xzf pycryptodome-3.22.0.tar.gz
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
@@ -35,11 +30,10 @@ jobs:
 
       - name: Build wheels
         run: |
-          # this will emit .whl into wheelhouse/
-          cibuildwheel --output-dir wheelhouse .
+          cibuildwheel pycryptodome-3.22.0 --output-dir wheelhouse
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pycryptodome‑cp310‑macosx_arm64
+          name: pycryptodome-cp310-macosx_arm64
           path: wheelhouse/*.whl
